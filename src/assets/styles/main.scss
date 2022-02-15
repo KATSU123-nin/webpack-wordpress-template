@@ -1,0 +1,8 @@
+//　Files for customizing Bootstrap
+@import "./bs5_custom/bs5-variables.scss";
+
+// File to import Bootstrap
+@import "~bootstrap/scss/bootstrap.scss";
+
+// Files for development
+@import "./sass_modules/title";

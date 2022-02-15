@@ -1,0 +1,12 @@
+.test {
+    &-title {
+        font-size: 40px;
+        transition: all .3s;
+
+        &:hover {
+            transform: translate(30px, 30px);
+            color: aqua;
+            opacity: .7;
+        }
+    }
+}
