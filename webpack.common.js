@@ -2,14 +2,14 @@ const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const ESLintPlugin = require('eslint-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const style = {"`assets/styles/${outputCss}.css`": "./src/styles.css"} ;
-
+const FixStyleOnlyEntriesPlugin = require("webpack-fix-style-only-entries");
 
 module.exports = ({ outputFile, outputImg, outputCss }) => ({
-
     entry:
     {
-        main: './src/js/main.js',
+        main: './src/assets/js/main.js',
+        mainCss: './src/assets/styles/main.scss',
+        themeCss: './src/styles.css',
     },
     output: {
         path: path.resolve(__dirname, 'dist'),
@@ -33,7 +33,10 @@ module.exports = ({ outputFile, outputImg, outputCss }) => ({
                 test: /\.(css|sass|scss)$/,
                 use: [
                     {
-                        loader: MiniCssExtractPlugin.loader
+                        loader: MiniCssExtractPlugin.loader,
+                        options: {
+                            esModule: false,
+                        }
                     },
                     {
                         loader: "css-loader",
@@ -68,18 +71,25 @@ module.exports = ({ outputFile, outputImg, outputCss }) => ({
                 ],
                 type: 'asset/resource',
                 generator: {
-                    filename: `images/${outputImg}[ext]`,
+                    filename: `assets/images/${outputImg}[ext]`,
                 },
             },
             {
-                test: /\.html$/,
+                test: /\.(html|php)$/,
                 loader: 'html-loader',
+                options: {
+                    minimize: false
+                }
             },
         ]
     },
     plugins: [
+        new FixStyleOnlyEntriesPlugin(),
         new MiniCssExtractPlugin({
-            filename: `assets/styles/${outputCss}.css`
+            //
+            filename: (pathData) => {
+                return pathData.chunk.name === 'themeCss' ? 'styles.css' : `assets/styles/${outputCss}.css`;
+            }
         }),
         new ESLintPlugin({
             extensions: ['.js'],
@@ -89,7 +99,10 @@ module.exports = ({ outputFile, outputImg, outputCss }) => ({
             template: './src/index.php',
             filename: 'index.php',
             inject: 'body',
+            minify: false,
         })
     ]
 });
+
+
 
